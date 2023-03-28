@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:push_notifications/src/utils/utils_colors.dart';
+import 'package:push_notifications/src/widgets/screens/widget_main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationList extends StatelessWidget {
@@ -47,41 +48,28 @@ class NotificationList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
-          statusBarColor: UtilsColors.titleBgColor,
-          statusBarIconBrightness: Brightness.light,
-        ),
-        child: Container(
-          decoration: UtilsColors.gradientDecoration,
-          child: SafeArea(
-            child: Column(
+    return WidgetMainScreen(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      IconButton(
-                        onPressed: () => Navigator.pop(context),
-                        icon: Icon(Icons.arrow_back),
-                      ),
-                      Text(
-                        'Lista de notificaciones',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(width: 24),
-                    ],
-                  ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icon(Icons.arrow_back),
                 ),
-                _expandedNotificationsList()
+                Text(
+                  'Lista de notificaciones',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 24),
               ],
             ),
           ),
-        ),
+          _expandedNotificationsList()
+        ],
       ),
     );
   }
