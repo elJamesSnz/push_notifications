@@ -5,6 +5,8 @@ import 'package:push_notifications/src/utils/utils_colors.dart';
 import 'package:push_notifications/src/widgets/screens/widget_main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../widgets/titles/widget_main_title.dart';
+
 class NotificationList extends StatelessWidget {
   const NotificationList({Key? key}) : super(key: key);
 
@@ -60,11 +62,8 @@ class NotificationList extends StatelessWidget {
                   onPressed: () => Navigator.pop(context),
                   icon: Icon(Icons.arrow_back),
                 ),
-                Text(
-                  'Lista de notificaciones',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(width: 24),
+                const WidgetMainTitle(title: 'Lista de notificaciones'),
+                const SizedBox(width: 24),
               ],
             ),
           ),
