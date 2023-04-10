@@ -6,6 +6,7 @@ import 'package:push_notifications/src/utils/utils_colors.dart';
 
 import 'src/pages/auth/auth_wrapper_page.dart';
 import 'src/pages/client/actions/client_actions_list.dart';
+import 'src/auth/authentication_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,8 @@ class MyApp extends StatelessWidget {
         ClientActionsList.routeName: (BuildContext context) =>
             ClientActionsList(),
         AuthWrapperPage.routeName: (BuildContext context) => AuthWrapperPage(),
+        AuthtenticationPage.routeName: (BuildContext context) =>
+            AuthtenticationPage(),
       },
     );
   }

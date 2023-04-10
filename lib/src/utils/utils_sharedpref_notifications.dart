@@ -22,6 +22,7 @@ class UtilsSharedPrefNotifications {
     final notificationData = {
       "timestamp": timestamp,
       "data": message.data,
+      "visibilidad": 1,
     };
 
     List<String> notificationsJson = prefs.getStringList('notifications') ?? [];

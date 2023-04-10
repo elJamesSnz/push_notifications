@@ -7,6 +7,8 @@ import 'package:push_notifications/src/widgets/notifications/widget_notification
 import 'package:push_notifications/src/widgets/screens/widget_main_screen.dart';
 import 'package:push_notifications/src/widgets/titles/widget_main_title.dart';
 
+import '../../notifications/notifications_list.dart';
+
 class ClientActionsList extends StatefulWidget {
   static const routeName = 'client/list';
 
@@ -59,7 +61,7 @@ class _ClientActionsListState extends State<ClientActionsList> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        WidgetMainTitle(title: 'Notifications App'),
+        const WidgetMainTitle(title: 'Notifications App'),
         WidgetNotificationIcon(
           icon: Icons.notifications,
           pushNotificationsProvider: pushNotificationsProvider,
@@ -84,12 +86,14 @@ class _ClientActionsListState extends State<ClientActionsList> {
           },
         ),
         WidgetActionCard(
-          title: 'Autentificación',
-          icon: Icons.face,
+          title: 'Notificaciones',
+          icon: Icons.notifications_active,
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => AuthtenticationPage()),
+              MaterialPageRoute(
+                builder: (context) => const NotificationList(),
+              ),
             );
           },
         )

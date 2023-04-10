@@ -20,7 +20,7 @@ class AuthRequestProvider {
 
       if (isAuthenticated) {
         WidgetFlushbarNotification customFlushbar = WidgetFlushbarNotification(
-            title: '', message: 'Autenticación exitosa', duration: 2);
+            title: '', message: 'Autenticación correcta', duration: 2);
         customFlushbar.flushbar(context).show(context);
       } else {
         WidgetFlushbarNotification customFlushbar = WidgetFlushbarNotification(
