@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:push_notifications/src/auth/authentication_page.dart';
+import 'package:push_notifications/src/pages/client/actions/client_actions_qrcode.dart';
 import 'package:push_notifications/src/providers/push_notifications_provider.dart';
 import 'package:push_notifications/src/utils/utils_sharedpref_notifications.dart';
 import 'package:push_notifications/src/widgets/cards/widget_action_card.dart';
@@ -82,7 +82,12 @@ class _ClientActionsListState extends State<ClientActionsList> {
           title: 'Registrar QR Code',
           icon: Icons.qr_code,
           onPressed: () {
-            //to-do
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ClientActionsQRCode(),
+              ),
+            );
           },
         ),
         WidgetActionCard(

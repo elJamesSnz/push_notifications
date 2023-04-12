@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/src/widgets/framework.dart';
-
 import '../utils/utils_sharedpref_notifications.dart';
 import '../widgets/notifications/widget_flushbar_notification.dart';
 

@@ -50,14 +50,20 @@ class _AuthtenticationPageState extends State<AuthtenticationPage> {
       }
     } on PlatformException catch (e) {
       print(e);
+      String _msg = '';
 
       if (e.code == auth_error.notAvailable) {
-        // to-do
+        _msg = 'No cuentas con métodos de autenticación configurados';
       } else if (e.code == auth_error.notEnrolled) {
-        // ...
+        _msg =
+            'Métodos de autenticación no disponibles, prueba con otro dispositivo';
       } else {
         // ...
       }
+
+      customFlushbar =
+          WidgetFlushbarNotification(title: '', message: _msg, duration: 2);
+      customFlushbar.flushbar(context).show(context);
     }
   }
 
