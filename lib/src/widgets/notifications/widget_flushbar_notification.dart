@@ -7,16 +7,18 @@ class WidgetFlushbarNotification {
   final String title;
   final String message;
   final int duration;
+  final FlushbarPosition flushbarPosition;
 
   WidgetFlushbarNotification({
     required this.title,
     required this.message,
     this.duration = 4,
+    this.flushbarPosition = FlushbarPosition.TOP,
   });
 
   Flushbar flushbar(BuildContext context) {
     return Flushbar(
-      flushbarPosition: FlushbarPosition.TOP,
+      flushbarPosition: flushbarPosition,
       messageText: Row(
         children: [
           Icon(
@@ -46,7 +48,7 @@ class WidgetFlushbarNotification {
         ],
       ),
       backgroundColor: Colors.white.withOpacity(0.9),
-      margin: EdgeInsets.fromLTRB(16, 50, 16, 0),
+      margin: EdgeInsets.fromLTRB(16, 50, 16, 20),
       borderRadius: BorderRadius.circular(8),
       duration: Duration(seconds: duration),
     );

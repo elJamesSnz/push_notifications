@@ -6,12 +6,13 @@ class WidgetNotificationIcon extends StatelessWidget {
   final IconData icon;
   final PushNotificationsProvider pushNotificationsProvider;
   final int notificationCount;
+  final List<Map<String, dynamic>> notifications;
 
-  WidgetNotificationIcon({
-    required this.icon,
-    required this.pushNotificationsProvider,
-    required this.notificationCount,
-  });
+  WidgetNotificationIcon(
+      {required this.icon,
+      required this.pushNotificationsProvider,
+      required this.notificationCount,
+      required this.notifications});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +20,6 @@ class WidgetNotificationIcon extends StatelessWidget {
       stream: pushNotificationsProvider.notificationsStream,
       builder: (BuildContext context,
           AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        print('Actualizando contador de notificaciones: ${snapshot.data}');
-
         int currentCount = notificationCount;
         if (snapshot.hasData) {
           currentCount = snapshot.data!.length;

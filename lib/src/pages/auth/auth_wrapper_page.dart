@@ -48,8 +48,8 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
           await FirebaseMessaging.instance.getToken() as String;
       if (firebaseToken == token) {
         print('Bienvenido');
-        //_authenticated =
-        //  await AuthRequestProvider().requestAuthentication(context);
+        // _authenticated =
+        //   await AuthRequestProvider().requestAuthentication(context);
         _authenticated = true;
         if (_authenticated) {
           return ClientActionsList();

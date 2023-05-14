@@ -5,43 +5,81 @@ import 'package:push_notifications/src/utils/utils_colors.dart';
 import 'package:push_notifications/src/widgets/screens/widget_main_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../providers/push_notifications_provider.dart';
+import '../../utils/utils_notifications.dart';
 import '../../widgets/titles/widget_main_title.dart';
 
 class NotificationList extends StatefulWidget {
-  const NotificationList({Key? key}) : super(key: key);
-
   @override
   State<NotificationList> createState() => _NotificationListState();
 }
 
 class _NotificationListState extends State<NotificationList> {
+  final UtilsNotifications _sharedPreferencesNotifications =
+      UtilsNotifications();
+
   int _visibilityFilter = 1;
   late final PageController _pageController =
       new PageController(initialPage: 0);
+  int notificationCount = 0;
 
-  Future<List<Map<String, dynamic>>> _getStoredNotifications() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> stringList = prefs.getStringList('notifications') ?? [];
-    List<Map<String, dynamic>> notifications = stringList
-        .map((item) => json.decode(item) as Map<String, dynamic>)
-        .toList();
-    return notifications;
-  }
+  late PushNotificationsProvider pushNotificationsProvider;
+  late String? wallet = '';
+  List<Map<String, dynamic>> notificationsList = [];
 
   void _showNotificationDetails(
       BuildContext context, Map<String, dynamic> notification) {
+    DateTime timestamp = DateTime.parse(notification['timestamp']);
+    String formattedTimestamp =
+        "${timestamp.day.toString().padLeft(2, '0')}-${timestamp.month.toString().padLeft(2, '0')}-${timestamp.year}";
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Detalles de la notificación'),
+          title: Text(
+            '${notification['title']}',
+            style: const TextStyle(
+              color: Colors.white,
+            ),
+          ),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Timestamp: ${notification['timestamp']}'),
-              SizedBox(height: 8),
-              Text('Datos: ${notification['data']}'),
+              Text(
+                'Fecha: ${formattedTimestamp}',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${notification['subtitle']}',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${notification['body']}',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Tipo: ${notification['notification']['type'].toString().toLowerCase()}',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              Text(
+                'Tipo: ${notification['notification']['result'].toString().toLowerCase()}',
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
             ],
           ),
           actions: [
@@ -49,9 +87,13 @@ class _NotificationListState extends State<NotificationList> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cerrar'),
+              child: const Text('Cerrar'),
             ),
           ],
+          backgroundColor: UtilsColors.titleAccentColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
         );
       },
     );
@@ -60,6 +102,17 @@ class _NotificationListState extends State<NotificationList> {
   @override
   void initState() {
     super.initState();
+
+    pushNotificationsProvider = PushNotificationsProvider(context);
+    pushNotificationsProvider.initialize();
+
+    _sharedPreferencesNotifications.notificationsStream
+        .listen((storedNotifications) {
+      setState(() {
+        notificationCount = storedNotifications.length;
+        notificationsList = storedNotifications;
+      });
+    });
   }
 
   @override
@@ -70,45 +123,67 @@ class _NotificationListState extends State<NotificationList> {
 
   void _handlePageChange(int pageIndex) {
     setState(() {
-      print('dfsa');
       _visibilityFilter = pageIndex + 1;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return WidgetMainScreen(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back),
+    return StreamBuilder<List<Map<String, dynamic>>>(
+      stream: pushNotificationsProvider.notificationsStream,
+      builder: (BuildContext context,
+          AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: const CircularProgressIndicator());
+        }
+
+        if (snapshot.hasError) {
+          return const Center(child: Text('Error al cargar notificaciones.'));
+        }
+
+        if (!snapshot.hasData) {
+          return const Center(
+              child: Text('No hay notificaciones disponibles.'));
+        }
+
+        List<Map<String, dynamic>> notifications = snapshot.data!;
+        print('tamaño data: ${notifications.length}');
+
+        return WidgetMainScreen(
+          body: Column(
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back),
+                    ),
+                    const WidgetMainTitle(title: 'Lista de notificaciones'),
+                    const SizedBox(width: 24),
+                  ],
                 ),
-                const WidgetMainTitle(title: 'Lista de notificaciones'),
-                const SizedBox(width: 24),
-              ],
-            ),
+              ),
+              const SizedBox(height: 24),
+              _showNavBar(),
+              const SizedBox(height: 24),
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: _handlePageChange,
+                  children: [
+                    _expandedNotificationsList(notifications, false),
+                    _expandedNotificationsList(notifications, true),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 24),
-          _showNavBar(),
-          const SizedBox(height: 24),
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: _handlePageChange,
-              children: [
-                _expandedNotificationsList(1),
-                _expandedNotificationsList(2),
-              ],
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -151,49 +226,35 @@ class _NotificationListState extends State<NotificationList> {
     );
   }
 
-  Widget _expandedNotificationsList(int visibilityFilter) {
-    return FutureBuilder<List<Map<String, dynamic>>>(
-      future: _getStoredNotifications(),
-      builder: (BuildContext context,
-          AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
-        }
+  Widget _expandedNotificationsList(
+      List<Map<String, dynamic>> notifications, bool visibilityFilter) {
+    List<Map<String, dynamic>> filteredNotifications =
+        notifications.where((n) => n['seen'] == visibilityFilter).toList();
 
-        if (snapshot.hasError) {
-          return Center(child: Text('Error al cargar notificaciones.'));
-        }
+    if (filteredNotifications.isEmpty && !visibilityFilter) {
+      return const Center(
+          child: Text('No hay notificaciones pendientes de ver'));
+    }
 
-        if (snapshot.hasData) {
-          List<Map<String, dynamic>> notifications = snapshot.data!
-              .where((n) => n['visibilidad'] == visibilityFilter)
-              .toList();
+    if (filteredNotifications.isEmpty && visibilityFilter) {
+      return const Center(
+          child: Text('No hay notificaciones marcadas como leídas'));
+    }
 
-          if (notifications.isEmpty && visibilityFilter == 1) {
-            return Center(
-                child: const Text('No hay notificaciones pendientes de ver'));
-          }
+    return ListView.builder(
+      itemCount: filteredNotifications.length,
+      itemBuilder: (BuildContext context, int index) {
+        Map<String, dynamic> notification = filteredNotifications[index];
 
-          if (notifications.isEmpty && visibilityFilter == 2) {
-            return Center(
-                child:
-                    const Text('No hay notificaciones marcadas como leídas'));
-          }
+        DateTime timestamp = DateTime.parse(notification['timestamp']);
+        String formattedTimestamp =
+            "${timestamp.day.toString().padLeft(2, '0')}-${timestamp.month.toString().padLeft(2, '0')}-${timestamp.year}";
 
-          return ListView.builder(
-            itemCount: notifications.length,
-            itemBuilder: (BuildContext context, int index) {
-              Map<String, dynamic> notification = notifications[index];
-              return ListTile(
-                title: Text(notification['timestamp'].toString()),
-                subtitle: Text(notification['data'].toString()),
-                onTap: () => _showNotificationDetails(context, notification),
-              );
-            },
-          );
-        }
-
-        return Center(child: Text('No hay notificaciones disponibles.'));
+        return ListTile(
+          title: Text('[$formattedTimestamp]- ${notification['title']}'),
+          subtitle: Text(notification['subtitle'].toString()),
+          onTap: () => _showNotificationDetails(context, notification),
+        );
       },
     );
   }

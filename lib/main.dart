@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:push_notifications/src/pages/client/actions/client_actions_qrcode.dart';
-import 'package:push_notifications/src/pages/notifications/notifications_list.dart';
 import 'package:push_notifications/src/utils/utils_colors.dart';
 
 import 'src/pages/auth/auth_wrapper_page.dart';
@@ -12,7 +11,7 @@ import 'src/auth/authentication_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  
+
   runApp(MyApp());
 }
 

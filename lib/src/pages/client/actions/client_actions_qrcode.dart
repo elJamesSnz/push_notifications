@@ -1,15 +1,14 @@
+import 'dart:async';
 import 'dart:convert';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:push_notifications/src/utils/utils_sharedpref_wallet.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
-
-import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:socket_io_client/socket_io_client.dart';
+import 'package:push_notifications/src/providers/qrcode_provider.dart';
 
+import '../../../utils/utils_colors.dart';
 import '../../../widgets/notifications/widget_flushbar_notification.dart';
 import 'client_actions_list.dart';
 
@@ -24,6 +23,10 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
   MobileScannerController? _cameraController;
   String? _qrCodeData;
   bool _screenOpened = false;
+  late http.Response response;
+  int _countdown = 5;
+  Timer? _countdownTimer;
+  int res = 0;
 
   @override
   void initState() {
@@ -52,47 +55,146 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
               ),
             ),
           ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: _finish,
+              child: Container(
+                height: 60,
+                color: UtilsColors.titleBgColor,
+                child: const Center(
+                  child: Text(
+                    'Haz clic para cerrar la cámara',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  void _foundBarcode(BarcodeCapture barcodeCapture) {
+  void _foundBarcode(BarcodeCapture barcodeCapture) async {
     if (!_screenOpened) {
       String? code = barcodeCapture.barcodes.first.rawValue;
-
-      debugPrint('Barcode found! $code');
       _screenOpened = true;
       final decodedData = json.decode(code!);
-      if (decodedData is Map && decodedData['registro'] == true) {
-        _sendDeviceIdToServer();
-        _cameraController?.stop();
-        Navigator.pushNamed(context, ClientActionsList.routeName);
-        WidgetFlushbarNotification(
-          title: '',
-          message: 'Se envió el token Id: ${decodedData['tokenSession']}',
-          duration: 2,
-        ).flushbar(context).show(context);
+
+      if (decodedData is Map) {
+        _showBottomBar("Se encontró QR, haciendo petición");
+
+        switch (decodedData['accion']) {
+          case 'registrar':
+            notify('Autorización de registro',
+                'Se envía la autorización de registro al servidor');
+            response =
+                await QrCodeProvider().sendDeviceIdToServer(decodedData['jwt']);
+
+            if (response.statusCode == 200) {
+              final responseBody = json.decode(response.body);
+              final wallet = responseBody['wallet'] as String;
+              UtilsSharedPrefWallet().saveWallet(wallet);
+            }
+            break;
+
+          case 'autorizar':
+            notify('Autorización', 'Se envía la autorización al servidor');
+            response = await QrCodeProvider()
+                .sendAuthorizationToServer(decodedData['jwt']);
+            break;
+
+          case 'crear market':
+            notify('Autorización de market',
+                'Se envía la autorización de market al servidor');
+            response = await QrCodeProvider()
+                .sendMarketAuthorizationToServer(decodedData['jwt']);
+            break;
+
+          case 'test':
+            response = await QrCodeProvider().test();
+            break;
+
+          default:
+            notify('inválido', 'QR inválido');
+            break;
+        }
+
+        _showBottomBar(
+            'Petición realizada. Haz clic para cerrar la cámara\nStatus respuesta: ${response.statusCode}\nLa ventana se cerrará en 5 segundos');
+
+        Future.delayed(Duration(seconds: 5), () {
+          _finish();
+        });
       }
     }
   }
 
-  Future<void> _sendDeviceIdToServer() async {
-    final String? token = await FirebaseMessaging.instance.getToken();
-    if (token != null) {
-      final newSocket = io("http://localhost:4000/");
-      newSocket.emit("device-id", token);
-      print("Se hace emit del token");
-      print(newSocket.toString());
-      print(token);
-    } else {
-      print('Error: Device token is null');
-    }
+  void _showBottomBar(String bodyText) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: _finish,
+          child: Container(
+            height: 120,
+            color: UtilsColors.titleBgColor,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    bodyText,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  if (res == 1 && _countdown > 0)
+                    Container(
+                      height: 60,
+                      color: UtilsColors.titleAccentColor,
+                      child: Center(
+                        child: Text(
+                          'Cerrando ventana en $_countdown segundos',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
-  @override
-  void dispose() {
-    _cameraController?.dispose();
-    super.dispose();
+  void notify(String title, String txt) {
+    WidgetFlushbarNotification(
+      title: title,
+      message: txt,
+      duration: 4,
+    ).flushbar(context).show(context);
+  }
+
+  void _finish() {
+    _cameraController?.stop();
+    Navigator.pushNamed(context, ClientActionsList.routeName);
   }
 }
