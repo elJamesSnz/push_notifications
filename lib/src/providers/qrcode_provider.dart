@@ -5,6 +5,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:http/http.dart' as http;
 import '../../src/widgets/notifications/widget_flushbar_notification.dart';
 import '../api/environment.dart';
+import '../utils/utils_sharedpref_wallet.dart';
 
 class QrCodeProvider {
   Future<http.Response> sendDeviceIdToServer(String tokenJWT) async {
@@ -27,14 +28,25 @@ class QrCodeProvider {
   }
 
   Future<http.Response> sendAuthorizationToServer(String tokenJWT) async {
-    final response = await _sendPostApi(
-      url: '/auth/authorize',
-      authorization: tokenJWT,
-      body: <String, String>{
-        'token': tokenJWT,
-      },
-    );
-    return response;
+    final String? device_id = await FirebaseMessaging.instance.getToken();
+    final String? wallet = await UtilsSharedPrefWallet().getWallet();
+
+    if (device_id != null && wallet != null) {
+      final response = await _sendPostApi(
+        url: '/not/authNotification',
+        authorization: tokenJWT,
+        body: <String, String>{
+          'token': tokenJWT,
+          'accion': 'autorizar',
+          'device_id': device_id,
+          'wallet': wallet,
+        },
+      );
+      return response;
+    } else {
+      print('Error: Device token or wallet is null');
+      return http.Response('Device token or wallet is null', 500);
+    }
   }
 
   Future<http.Response> sendMarketAuthorizationToServer(String tokenJWT) async {

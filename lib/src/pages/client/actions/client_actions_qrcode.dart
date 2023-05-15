@@ -24,6 +24,7 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
   String? _qrCodeData;
   bool _screenOpened = false;
   late http.Response response;
+  late String solicitud = "";
   int _countdown = 5;
   Timer? _countdownTimer;
   int res = 0;
@@ -90,7 +91,7 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
 
       if (decodedData is Map) {
         _showBottomBar("Se encontró QR, haciendo petición");
-
+        solicitud = decodedData['accion'];
         switch (decodedData['accion']) {
           case 'registrar':
             notify('Autorización de registro',
@@ -127,8 +128,23 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
             break;
         }
 
+        switch (response.statusCode) {
+          case 200:
+            solicitud = 'Solicitud [${solicitud}]: autorizada';
+            break;
+          case 404:
+            solicitud = 'Solicitud [${solicitud}]: inválida';
+            break;
+          case 401:
+            solicitud = 'Solicitud [${solicitud}]: no autorizada / expirada';
+            break;
+          case 500:
+            solicitud = 'Solicitud [${solicitud}]: no realizada correctamente';
+            break;
+        }
+
         _showBottomBar(
-            'Petición realizada. Haz clic para cerrar la cámara\nStatus respuesta: ${response.statusCode}\nLa ventana se cerrará en 5 segundos');
+            '${solicitud}\nHaga clic para cerrar la cámara o espere 5 segundos');
 
         Future.delayed(Duration(seconds: 5), () {
           _finish();
@@ -145,7 +161,8 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
         return GestureDetector(
           onTap: _finish,
           child: Container(
-            height: 120,
+            height: 80
+            ,
             color: UtilsColors.titleBgColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
