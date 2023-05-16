@@ -94,8 +94,6 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
         solicitud = decodedData['accion'];
         switch (decodedData['accion']) {
           case 'registrar':
-            notify('Autorización de registro',
-                'Se envía la autorización de registro al servidor');
             response =
                 await QrCodeProvider().sendDeviceIdToServer(decodedData['jwt']);
 
@@ -107,14 +105,11 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
             break;
 
           case 'autorizar':
-            notify('Autorización', 'Se envía la autorización al servidor');
             response = await QrCodeProvider()
                 .sendAuthorizationToServer(decodedData['jwt']);
             break;
 
           case 'crear market':
-            notify('Autorización de market',
-                'Se envía la autorización de market al servidor');
             response = await QrCodeProvider()
                 .sendMarketAuthorizationToServer(decodedData['jwt']);
             break;
@@ -135,6 +130,9 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
           case 404:
             solicitud = 'Solicitud [${solicitud}]: inválida';
             break;
+          case 400:
+            solicitud = 'Solicitud [${solicitud}]: inválida';
+            break;
           case 401:
             solicitud = 'Solicitud [${solicitud}]: no autorizada / expirada';
             break;
@@ -143,8 +141,9 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
             break;
         }
 
-        _showBottomBar(
-            '${solicitud}\nHaga clic para cerrar la cámara o espere 5 segundos');
+        notify('Respuesta a solicitud', solicitud);
+
+        _showBottomBar('Haga clic para salir o espere 5 segundos');
 
         Future.delayed(Duration(seconds: 5), () {
           _finish();
@@ -161,8 +160,7 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
         return GestureDetector(
           onTap: _finish,
           child: Container(
-            height: 80
-            ,
+            height: 80,
             color: UtilsColors.titleBgColor,
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 16.0),
