@@ -27,6 +27,7 @@ class _ClientActionsListState extends State<ClientActionsList> {
   late PushNotificationsProvider pushNotificationsProvider;
   late String? wallet = '';
   List<Map<String, dynamic>> notificationsList = [];
+
   @override
   void initState() {
     super.initState();
@@ -34,19 +35,21 @@ class _ClientActionsListState extends State<ClientActionsList> {
     pushNotificationsProvider = PushNotificationsProvider(context);
     pushNotificationsProvider.initialize();
 
+    UtilsSharedPrefWallet().getWallet().then((value) {
+      setState(() {
+        wallet = value;
+        if (wallet != null) {
+          // Only fetch notifications if wallet is not null
+          _sharedPreferencesNotifications.fetchStoredNotifications();
+        }
+      });
+    });
+
     _sharedPreferencesNotifications.notificationsStream
         .listen((storedNotifications) {
       setState(() {
         notificationCount = storedNotifications.length;
         notificationsList = storedNotifications;
-      });
-    });
-
-    _sharedPreferencesNotifications.fetchStoredNotifications();
-
-    UtilsSharedPrefWallet().getWallet().then((value) {
-      setState(() {
-        wallet = value;
       });
     });
   }

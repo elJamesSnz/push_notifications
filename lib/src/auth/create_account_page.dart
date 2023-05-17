@@ -5,7 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:push_notifications/src/pages/auth/auth_wrapper_page.dart';
+import 'package:push_notifications/src/auth/auth_actions_qrcode.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 
@@ -16,55 +16,17 @@ import '../widgets/titles/widget_main_title.dart';
 
 import '../pages/client/actions/client_actions_list.dart';
 
-class AuthtenticationPage extends StatefulWidget {
-  static const routeName = 'auth/page';
+class CreateAccountPage extends StatefulWidget {
+  static const routeName = 'create/page';
 
   @override
-  _AuthtenticationPageState createState() => _AuthtenticationPageState();
+  _CreateAccountPageState createState() => _CreateAccountPageState();
 }
 
-class _AuthtenticationPageState extends State<AuthtenticationPage> {
+class _CreateAccountPageState extends State<CreateAccountPage> {
   final LocalAuthentication _localAuth = LocalAuthentication();
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   late WidgetFlushbarNotification customFlushbar;
-
-  Future<void> _authenticate() async {
-    customFlushbar = WidgetFlushbarNotification(
-        title: '', message: 'Autenticación registrada', duration: 2);
-    try {
-      bool isAuthenticated = await _localAuth.authenticate(
-          localizedReason: 'Por favor, autentícate para continuar.',
-          options: const AuthenticationOptions(biometricOnly: false));
-
-      if (isAuthenticated) {
-        customFlushbar.flushbar(context).show(context);
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-
-        await prefs.setBool("auth", true);
-        prefs.remove('wallet');
-
-        Navigator.pushNamed(context, AuthWrapperPage.routeName);
-      } else {
-        customFlushbar = WidgetFlushbarNotification(
-            title: '', message: 'Autenticación fallida', duration: 2);
-        customFlushbar.flushbar(context).show(context);
-      }
-    } on PlatformException catch (e) {
-      print(e);
-      String _msg = '';
-
-      if (e.code == auth_error.notAvailable) {
-        _msg = 'No cuentas con métodos de autenticación configurados';
-      } else if (e.code == auth_error.notEnrolled) {
-        _msg =
-            'Métodos de autenticación no disponibles, prueba con otro dispositivo';
-      } else {}
-
-      customFlushbar =
-          WidgetFlushbarNotification(title: '', message: _msg, duration: 2);
-      customFlushbar.flushbar(context).show(context);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +39,7 @@ class _AuthtenticationPageState extends State<AuthtenticationPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: const [
-                WidgetMainTitle(title: 'Registro de autenticación'),
+                WidgetMainTitle(title: 'Asociar dispositivo'),
                 SizedBox(width: 24),
               ],
             ),
@@ -96,9 +58,16 @@ class _AuthtenticationPageState extends State<AuthtenticationPage> {
                     mainAxisSpacing: 16,
                     children: [
                       WidgetActionCard(
-                        title: 'Registrar autenticación',
-                        icon: Icons.face,
-                        onPressed: _authenticate,
+                        title: 'Registrar dispositivo',
+                        icon: Icons.phone_android,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AuthActionsQRCode(),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
