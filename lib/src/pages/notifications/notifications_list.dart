@@ -1,15 +1,14 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:push_notifications/src/utils/utils_colors.dart';
 import 'package:push_notifications/src/widgets/screens/widget_main_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../providers/push_notifications_provider.dart';
 import '../../utils/utils_notifications.dart';
 import '../../widgets/titles/widget_main_title.dart';
 
 class NotificationList extends StatefulWidget {
+  const NotificationList({super.key});
+
   @override
   State<NotificationList> createState() => _NotificationListState();
 }
@@ -20,7 +19,7 @@ class _NotificationListState extends State<NotificationList> {
 
   int _visibilityFilter = 1;
   late final PageController _pageController =
-      new PageController(initialPage: 0);
+      PageController(initialPage: 0);
   int notificationCount = 0;
 
   late PushNotificationsProvider pushNotificationsProvider;
@@ -48,7 +47,7 @@ class _NotificationListState extends State<NotificationList> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Fecha: ${formattedTimestamp}',
+                'Fecha: $formattedTimestamp',
                 style: const TextStyle(
                   color: Colors.white,
                 ),
@@ -134,7 +133,7 @@ class _NotificationListState extends State<NotificationList> {
       builder: (BuildContext context,
           AsyncSnapshot<List<Map<String, dynamic>>> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: const CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
 
         if (snapshot.hasError) {

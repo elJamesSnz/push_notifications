@@ -25,7 +25,7 @@ class WidgetFlushbarNotification {
             Icons.notifications,
             color: UtilsColors.titleAccentColor,
           ),
-          SizedBox(width: 10),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,7 +48,7 @@ class WidgetFlushbarNotification {
         ],
       ),
       backgroundColor: Colors.white.withOpacity(0.9),
-      margin: EdgeInsets.fromLTRB(16, 50, 16, 20),
+      margin: const EdgeInsets.fromLTRB(16, 50, 16, 20),
       borderRadius: BorderRadius.circular(8),
       duration: Duration(seconds: duration),
     );

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:push_notifications/src/utils/utils_sharedpref_wallet.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:http/http.dart' as http;
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:push_notifications/src/providers/qrcode_provider.dart';
@@ -15,6 +13,8 @@ import 'client_actions_list.dart';
 class ClientActionsQRCode extends StatefulWidget {
   static const routeName = 'client/qrcode';
 
+  const ClientActionsQRCode({super.key});
+
   @override
   _ClientActionsQRCodeState createState() => _ClientActionsQRCodeState();
 }
@@ -25,7 +25,7 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
   bool _screenOpened = false;
   late http.Response response;
   late String solicitud = "";
-  int _countdown = 5;
+  final int _countdown = 5;
   Timer? _countdownTimer;
   int res = 0;
 
@@ -125,19 +125,19 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
 
         switch (response.statusCode) {
           case 200:
-            solicitud = 'Solicitud [${solicitud}]: autorizada';
+            solicitud = 'Solicitud [$solicitud]: autorizada';
             break;
           case 404:
-            solicitud = 'Solicitud [${solicitud}]: inválida';
+            solicitud = 'Solicitud [$solicitud]: inválida';
             break;
           case 400:
-            solicitud = 'Solicitud [${solicitud}]: inválida';
+            solicitud = 'Solicitud [$solicitud]: inválida';
             break;
           case 401:
-            solicitud = 'Solicitud [${solicitud}]: no autorizada / expirada';
+            solicitud = 'Solicitud [$solicitud]: no autorizada / expirada';
             break;
           case 500:
-            solicitud = 'Solicitud [${solicitud}]: no realizada correctamente';
+            solicitud = 'Solicitud [$solicitud]: no realizada correctamente';
             break;
         }
 
@@ -145,7 +145,7 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
 
         _showBottomBar('Haga clic para salir o espere 5 segundos');
 
-        Future.delayed(Duration(seconds: 5), () {
+        Future.delayed(const Duration(seconds: 5), () {
           _finish();
         });
       }
@@ -169,7 +169,7 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
                 children: [
                   Text(
                     bodyText,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -183,7 +183,7 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
                       child: Center(
                         child: Text(
                           'Cerrando ventana en $_countdown segundos',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,

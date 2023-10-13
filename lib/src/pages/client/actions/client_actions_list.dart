@@ -15,6 +15,8 @@ import '../../notifications/notifications_list.dart';
 class ClientActionsList extends StatefulWidget {
   static const routeName = 'client/list';
 
+  const ClientActionsList({super.key});
+
   @override
   _ClientActionsListState createState() => _ClientActionsListState();
 }
@@ -99,7 +101,7 @@ class _ClientActionsListState extends State<ClientActionsList> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ClientActionsQRCode(),
+                  builder: (context) => const ClientActionsQRCode(),
                 ),
               );
             },
@@ -111,7 +113,7 @@ class _ClientActionsListState extends State<ClientActionsList> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NotificationList(),
+                  builder: (context) => const NotificationList(),
                 ),
               );
             },

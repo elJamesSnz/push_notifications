@@ -32,7 +32,7 @@ dependencies:
   firebase_core: ^2.8.0
   firebase_messaging: ^14.3.0
   shared_preferences: ^2.0.20
-  another_flushbar: ^1.12.29
+  another_flushbar: ^1.12.30
   local_auth: ^2.1.6
   http: ^0.13.3
   mobile_scanner: ^3.2.0

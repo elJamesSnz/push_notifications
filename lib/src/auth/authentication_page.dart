@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'package:another_flushbar/flushbar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,10 +13,11 @@ import '../widgets/notifications/widget_flushbar_notification.dart';
 import '../widgets/screens/widget_main_screen.dart';
 import '../widgets/titles/widget_main_title.dart';
 
-import '../pages/client/actions/client_actions_list.dart';
 
 class AuthtenticationPage extends StatefulWidget {
   static const routeName = 'auth/page';
+
+  const AuthtenticationPage({super.key});
 
   @override
   _AuthtenticationPageState createState() => _AuthtenticationPageState();
@@ -51,17 +51,17 @@ class _AuthtenticationPageState extends State<AuthtenticationPage> {
       }
     } on PlatformException catch (e) {
       print(e);
-      String _msg = '';
+      String msg = '';
 
       if (e.code == auth_error.notAvailable) {
-        _msg = 'No cuentas con métodos de autenticación configurados';
+        msg = 'No cuentas con métodos de autenticación configurados';
       } else if (e.code == auth_error.notEnrolled) {
-        _msg =
+        msg =
             'Métodos de autenticación no disponibles, prueba con otro dispositivo';
       } else {}
 
       customFlushbar =
-          WidgetFlushbarNotification(title: '', message: _msg, duration: 2);
+          WidgetFlushbarNotification(title: '', message: msg, duration: 2);
       customFlushbar.flushbar(context).show(context);
     }
   }
@@ -74,14 +74,14 @@ class _AuthtenticationPageState extends State<AuthtenticationPage> {
         child: Column(
           children: [
             const SizedBox(height: 16),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const [
+              children: [
                 WidgetMainTitle(title: 'Registro de autenticación'),
                 SizedBox(width: 24),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: Container(
                 padding: EdgeInsets.symmetric(

@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:push_notifications/src/auth/create_account_page.dart';
 import 'package:push_notifications/src/pages/auth/auth_wrapper_page.dart';
 import 'package:push_notifications/src/utils/utils_sharedpref_wallet.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +15,8 @@ import '../widgets/notifications/widget_flushbar_notification.dart';
 class AuthActionsQRCode extends StatefulWidget {
   static const routeName = 'auth/qrcode';
 
+  const AuthActionsQRCode({super.key});
+
   @override
   _AuthActionsQRCodeState createState() => _AuthActionsQRCodeState();
 }
@@ -28,7 +28,7 @@ class _AuthActionsQRCodeState extends State<AuthActionsQRCode> {
   bool _screenOpened = false;
   late http.Response response;
   late String solicitud = "";
-  int _countdown = 5;
+  final int _countdown = 5;
   Timer? _countdownTimer;
   int res = 0;
 
@@ -117,20 +117,20 @@ class _AuthActionsQRCodeState extends State<AuthActionsQRCode> {
 
         switch (response.statusCode) {
           case 200:
-            solicitud = 'Solicitud [${solicitud}]: autorizada';
+            solicitud = 'Solicitud [$solicitud]: autorizada';
 
             break;
           case 404:
-            solicitud = 'Solicitud [${solicitud}]: inválida';
+            solicitud = 'Solicitud [$solicitud]: inválida';
             break;
           case 400:
-            solicitud = 'Solicitud [${solicitud}]: inválida';
+            solicitud = 'Solicitud [$solicitud]: inválida';
             break;
           case 401:
-            solicitud = 'Solicitud [${solicitud}]: no autorizada / expirada';
+            solicitud = 'Solicitud [$solicitud]: no autorizada / expirada';
             break;
           case 500:
-            solicitud = 'Solicitud [${solicitud}]: no realizada correctamente';
+            solicitud = 'Solicitud [$solicitud]: no realizada correctamente';
             break;
         }
 
@@ -138,7 +138,7 @@ class _AuthActionsQRCodeState extends State<AuthActionsQRCode> {
 
         _showBottomBar('Haga clic para salir o espere 5 segundos');
 
-        Future.delayed(Duration(seconds: 5), () {
+        Future.delayed(const Duration(seconds: 5), () {
           _finish();
         });
       }

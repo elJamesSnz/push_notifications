@@ -8,7 +8,7 @@ class WidgetActionCard extends StatelessWidget {
   final IconData icon;
   final VoidCallback onPressed;
 
-  WidgetActionCard({
+  const WidgetActionCard({super.key, 
     required this.title,
     required this.icon,
     required this.onPressed,
@@ -41,11 +41,11 @@ class WidgetActionCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(icon, size: 48),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ],
           ),

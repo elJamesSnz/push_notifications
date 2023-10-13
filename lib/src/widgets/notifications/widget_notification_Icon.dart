@@ -8,8 +8,8 @@ class WidgetNotificationIcon extends StatelessWidget {
   final int notificationCount;
   final List<Map<String, dynamic>> notifications;
 
-  WidgetNotificationIcon(
-      {required this.icon,
+  const WidgetNotificationIcon(
+      {super.key, required this.icon,
       required this.pushNotificationsProvider,
       required this.notificationCount,
       required this.notifications});
@@ -33,7 +33,7 @@ class WidgetNotificationIcon extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NotificationList(),
+                    builder: (context) => const NotificationList(),
                   ),
                 );
               },
@@ -42,18 +42,18 @@ class WidgetNotificationIcon extends StatelessWidget {
               right: 0,
               top: 0,
               child: Container(
-                padding: EdgeInsets.all(2),
+                padding: const EdgeInsets.all(2),
                 decoration: BoxDecoration(
                   color: Colors.red,
                   borderRadius: BorderRadius.circular(6),
                 ),
-                constraints: BoxConstraints(
+                constraints: const BoxConstraints(
                   minWidth: 14,
                   minHeight: 14,
                 ),
                 child: Text(
                   '$currentCount',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 8,
                   ),

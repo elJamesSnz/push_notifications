@@ -1,21 +1,18 @@
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:http/http.dart' as http;
-import '../../src/widgets/notifications/widget_flushbar_notification.dart';
 import '../api/environment.dart';
 import '../utils/utils_sharedpref_wallet.dart';
 
 class QrCodeProvider {
   Future<http.Response> sendDeviceIdToServer(String tokenJWT) async {
-    final String? device_id = await FirebaseMessaging.instance.getToken();
-    if (device_id != null) {
+    final String? deviceId = await FirebaseMessaging.instance.getToken();
+    if (deviceId != null) {
       final response = await _sendPostApi(
         url: '/auth/save',
         authorization: tokenJWT,
         body: <String, String>{
-          'device_id': device_id,
+          'device_id': deviceId,
           'token': tokenJWT,
         },
       );
@@ -28,17 +25,17 @@ class QrCodeProvider {
   }
 
   Future<http.Response> sendAuthorizationToServer(String tokenJWT) async {
-    final String? device_id = await FirebaseMessaging.instance.getToken();
+    final String? deviceId = await FirebaseMessaging.instance.getToken();
     final String? wallet = await UtilsSharedPrefWallet().getWallet();
 
-    if (device_id != null && wallet != null) {
+    if (deviceId != null && wallet != null) {
       final response = await _sendPostApi(
         url: '/not/authNotification',
         authorization: tokenJWT,
         body: <String, String>{
           'token': tokenJWT,
           'accion': 'autorizar',
-          'device_id': device_id,
+          'device_id': deviceId,
           'wallet': wallet,
         },
       );
@@ -73,10 +70,10 @@ class QrCodeProvider {
     authorization ??= '';
     body ??= {};
 
-    print('petición POST\n${url}-${authorization}-"${body}');
+    print('petición POST\n$url-$authorization-"$body');
 
     final response = await http.post(
-      Uri.parse('${Environment.API_URL}${url}'),
+      Uri.parse('${Environment.API_URL}$url'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         if (authorization.isNotEmpty) 'authorization': authorization,

@@ -16,6 +16,8 @@ import '../../auth/authentication_page.dart';
 class AuthWrapperPage extends StatefulWidget {
   static const routeName = 'auth/wrapper';
 
+  const AuthWrapperPage({super.key});
+
   @override
   _AuthWrapperPageState createState() => _AuthWrapperPageState();
 }
@@ -49,7 +51,7 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
       print('Nuevo dispositivo / token distinto al guardado');
     });
 
-    return AuthtenticationPage();
+    return const AuthtenticationPage();
   }
 
   Future<Widget> checkTokenAndAuth() async {
@@ -82,7 +84,7 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
           }
 
           if (_authenticated) {
-            return ClientActionsList();
+            return const ClientActionsList();
           } else {
             SystemNavigator.pop();
           }
@@ -94,7 +96,7 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
       }
 
       if (_authenticated) {
-        return CreateAccountPage();
+        return const CreateAccountPage();
       } else {
         SystemNavigator.pop();
       }
@@ -110,7 +112,7 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
         }
 
         if (_authenticated) {
-          return CreateAccountPage();
+          return const CreateAccountPage();
         } else {
           SystemNavigator.pop();
         }
@@ -129,7 +131,7 @@ class _AuthWrapperPageState extends State<AuthWrapperPage> {
   Future<bool> _verify(firebaseToken, wallet) async {
     final prefs = await SharedPreferences.getInstance();
     final response = await http.post(
-      Uri.parse(Environment.API_URL + "/auth/verify"),
+      Uri.parse("${Environment.API_URL}/auth/verify"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

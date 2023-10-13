@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:push_notifications/src/utils/utils_sharedpref_wallet.dart';
 
 import '../api/environment.dart';
