@@ -128,10 +128,10 @@ class _ClientActionsQRCodeState extends State<ClientActionsQRCode> {
             solicitud = 'Solicitud [$solicitud]: autorizada';
             break;
           case 404:
-            solicitud = 'Solicitud [$solicitud]: inválida';
+            solicitud = 'Solicitud [$solicitud]: inválida / no encontrada';
             break;
           case 400:
-            solicitud = 'Solicitud [$solicitud]: inválida';
+            solicitud = 'Solicitud [$solicitud]: inválida / datos incorrectos';
             break;
           case 401:
             solicitud = 'Solicitud [$solicitud]: no autorizada / expirada';

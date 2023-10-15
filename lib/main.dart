@@ -9,7 +9,7 @@ import 'src/auth/authentication_page.dart';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 
-void printFirebaseToken() async {
+Future printFirebaseToken() async {
   String? token = await FirebaseMessaging.instance.getToken();
   print("Firebase Token: $token");
 }
@@ -17,7 +17,8 @@ void printFirebaseToken() async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  printFirebaseToken();
+  // ignore: await_only_futures
+  await printFirebaseToken();
   runApp(const MyApp());
 }
 
